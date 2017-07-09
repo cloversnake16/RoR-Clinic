@@ -1,0 +1,120 @@
+<header class="header">
+  <div class="container">
+    <a class="logo" href="/">
+      <!--<%= image_tag 'logo1-default.png' %>-->
+      <span>247clinic.ca</span>
+    </a>
+    <div class="topbar">
+      <ul class="loginbar pull-right">
+          <li class="hoverSelector">
+              <i class="fa fa-globe"></i>
+              <a>Languages</a>
+              <ul class="languages hoverSelectorBlock">
+                  <li>
+                    <%= link_to t('menu.languages.en'), change_locale_path(:en) %>
+                  </li>
+                  <li>
+                    <%= link_to t('menu.languages.zh-CN'), change_locale_path('zh-CN') %>
+                  </li>
+                  <li>
+                    <%= link_to t('menu.languages.zh-TW'), change_locale_path('zh-TW') %>
+                  </li>
+              </ul>
+          </li>
+          <li class="topbar-devider"></li>
+          <li><%= link_to 'Help', help_path %></li>
+          <% unless logged_in? %>
+            <li class="topbar-devider"></li>
+            <li><%= link_to 'Login', login_path %></li>
+          <% end %>
+      </ul>
+    </div>
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="fa fa-bars"></span>
+    </button>
+  </div><!--/end container-->
+    <div class="collapse navbar-collapse navbar-responsive-collapse">
+      <div class="container">
+        <ul class="nav navbar-nav">
+          <li>
+            <%= link_to root_path do %>
+            <span class="glyphicon glyphicon-home"></span>&nbsp;<%= t('content.home') %>
+           <% end %>
+          </li>
+          <% if logged_in? %>
+            <li>
+              <%= link_to video_sessions_path do%>
+                <span class="glyphicon glyphicon-dashboard"></span>&nbsp;Dashboard
+              <% end %>
+            </li>
+            <li>
+              <%= link_to history_video_sessions_path do%>
+                <span class="glyphicon glyphicon-time"></span>&nbsp;History
+              <% end %>
+            </li>
+            <li>
+              <%= link_to '/messages' do%>
+                <span class="glyphicon glyphicon-envelope"></span>&nbsp;Messages
+              <% end %>
+            </li>
+            <% if current_user.admin? %>
+              <li>
+                <%= link_to users_path do%>
+                <span class="glyphicon glyphicon-th-list"></span>&nbsp;Users
+                <% end %>
+              </li>
+              <li>
+                <%= link_to clinics_path do%>
+                  <span class="glyphicon glyphicon-plus"></span>&nbsp;Clinics
+                <% end %>
+              </li>
+            <% else %>
+              <li>
+                <%= link_to appointments_path do%>
+                  <span class="glyphicon glyphicon-calendar"></span>&nbsp;Appointments
+                <% end %>
+              </li>
+            <% end %>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Account</a>
+              <ul class="dropdown-menu" role="menu">
+                <li>
+                  <%= link_to edit_user_path(current_user) do %>
+                    <span class="glyphicon glyphicon-user"></span>&nbsp;Profile
+                  <% end %>
+                </li>
+                <li>
+                  <%= link_to edit_user_path(current_user) do %>
+                    <span class="glyphicon glyphicon-cog"></span>&nbsp;Settings
+                  <% end %>
+                </li>
+                <li class="divider"></li>
+                <% unless (current_user.doctor? or current_user.admin?) %>
+                  <li>
+                    <%= link_to favorites_users_path do %>
+                      <span class="glyphicon glyphicon-star-empty"></span>&nbsp;Favorites
+                    <% end %>
+                  </li>
+                  <li class="divider"></li>
+                <% end %>
+                <li>
+                   <%= link_to logout_path, method: :delete do %>
+                   <span class="glyphicon glyphicon-log-out"></span>&nbsp;Log out
+                   <% end %>
+                </li>
+              </ul>
+            </li>
+
+          <% else %>
+            <li>
+              <%= link_to new_appointment_path do%>
+                <span class="glyphicon glyphicon-calendar"></span>&nbsp;Appointment
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+</header>

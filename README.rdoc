@@ -1,0 +1,35 @@
+# Ruby on Rails: PSM application for 247Clinic.com
+
+This is the sample application for the development of 247Clinic.com 
+
+always mind your surroundings
+
+
+
+//how to make changes in bitbucket
+//these changes may take some time to show on the actual Bitbucket site
+
+//---------------------------------------------------------------------------------//
+Clone the main repo git clone https://bitbucket.org/username/repo-fork.git
+
+Create a new local branch git checkout -b my-branch
+
+Work in that branch git commit -m "some work done" //if you get an error try git add -A and then do the commit  -Francis
+
+Push up the branch git push -u origin my-branch
+
+Create a Pull request
+//---------------------------------------------------------------------------------//
+
+
+
+//how to deploy to Heroku
+
+//---------------------------------------//
+change to master branch
+
+merge with branch you were working on (may encounter problems here)
+
+git heroku push master 
+
+//--------------------------------------//

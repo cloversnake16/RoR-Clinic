@@ -1,0 +1,34 @@
+<% provide(:title, "History") %>
+<h1>History of Video Sessions</h1>
+
+<% if @video_sessions.count > 0 %>
+  <table class="table">
+    <tr>
+      <th>No</th>
+      <th>User</th>
+      <th>Symptom</th>
+      <th>Created Time</th>
+      <th>Doctor</th>
+      <th>Started Time</th>
+      <th>Ended Time</th>
+      <th>Status</th>
+      <th></th>
+    </tr>
+    <% @video_sessions.each do |video_session| %>
+      <tr>
+        <td><%= video_session.id %></td>
+        <td><%= video_session.user.try(:name) %></td>
+        <td><%= video_session.symptom %></td>
+        <td><%= video_session.created_at.strftime("%B %-d, %Y %I:%M %P") %></td>
+        <td><%= video_session.doctor.try(:name) %></td>
+        <td><%= video_session.start_time.strftime("%B %-d, %Y %I:%M %P") if video_session.start_time %></td>
+        <td><%= video_session.finish_time.strftime("%B %-d, %Y %I:%M %P") if video_session.finish_time %></td>
+        <td><%= video_session.status == 'finished' ? 'complete' : 'incomplete' %></td>
+        <td><%= link_to 'View', history_video_session_path(video_session) %></td>
+      </tr>
+    <% end %>
+  </table>
+  <div class="text-center"><%= will_paginate @video_sessions %></div>
+<% else %>
+  <div class="text-center">No history of video sessions.</div>
+<% end %>

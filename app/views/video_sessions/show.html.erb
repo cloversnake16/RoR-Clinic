@@ -1,0 +1,193 @@
+<% if @is_csr %>
+  <% provide(:title, "Online Visit") %>
+
+  <div class="panel panel-profile no-bg">
+    <div class="panel-heading overflow-h">
+      <h2 class="panel-title heading-sm pull-left">Online Visit</h2>
+    </div>
+
+    <div class="panel-body">
+      <div id="waiting-message"><h2>Waiting for Patient</h2></div>
+
+      <div class="row">
+        <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-12">
+          <div>
+            <%= render 'video_stream' %>
+          </div>
+          <div class="form-group">
+            <%= button_to 'Schedule Online Visit', new_online_visit_path(@video_session), method: :get, class: "btn btn-primary form-control" %>
+          </div>
+          <div class="form-group">
+            <button class='btn btn-primary form-control btn-transfer-video-session-to-doctor' data-toggle="modal" data-target="#doctors_modal">Transfer Video Session to Doctor</button>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-primary form-control btn-put-wating" %>Put to Waiting Queue</button>
+          </div>
+          <%= form_for(@video_session, url: finish_video_session_path(@video_session)) do |f| %>
+            <%= f.submit 'End Online Visit', id: "finish_video_session", class: "btn btn-primary" %>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="modal fade" id="doctors_modal" tabindex="-1" role="dialog" aria-labelledby="doctors_modal_title">
+        <div class="modal-dialog modal-sm" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="doctors_modal_title">Transfer to Doctor</h4>
+            </div>
+            <div class="modal-body">
+              <label>Select a doctor</label>
+              <select class="form-control present-doctors"></select>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-info btn-chat" data-dismiss="modal">Chat</button>
+              <button type="button" class="btn btn-primary btn-transfer">Transfer</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<% elsif @is_doctor %>
+  <% provide(:title, "Video Session with Patient") %>
+  <div class="row">
+    <div class="col-md-8 col-sm-8 col-xs-12">
+      <div class="panel panel-profile no-bg">
+        <div class="panel-heading overflow-h">
+          <h2 class="panel-title heading-sm pull-left">Video Session with Patient</h2>
+            <div class="btn-group pull-right" role="group" aria-label="...">
+              <%= button_tag 'Sign-Off', class: "btn btn-default", id: "sign_off", disabled: @video_session.sign_off %>
+              <%= button_tag 'Save & Exit', class: "btn btn-default", id: "save_exit" %> 
+            </div>          
+        </div>
+        
+        <div class="panel-body">
+          <div id="waiting-message"><h2>Waiting for Patient</h2></div>
+
+          <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div>
+                <%= render 'video_stream' %>
+              </div>
+              <div class="row form-group">
+                <div class="col-md-12 col-sm-12 col-xs-12 center">
+                  <div class="btn-group" role="group" aria-label="...">
+                    <%= button_tag 'Take Photo', id: "take_photo", class: "btn btn-default" %> 
+                    <%= button_tag 'End Session', id: "end_session", class: "btn btn-primary" %>
+                    <%= button_tag 'Mute / Pause Session', id: "play_video_stream", class: "btn btn-default" %>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group" id="taken_photos">
+
+              </div>
+              <canvas></canvas>
+              <%= form_for(@photo, html: { class: 'directUpload', data: { 'form-data' => (@s3_direct_post.fields), 'url' => @s3_direct_post.url, 'host' => URI.parse(@s3_direct_post.url).host } }) do |f| %>
+                <div class="field">
+                  <%= f.label :photo_url %><br>
+                  <%= f.file_field :photo_url %>
+                  <%= f.submit %>
+                </div>
+              <% end %>
+              <div class="row form-group">
+                <div class="col-md-12 col-sm-12 col-xs-12 center">
+                  <div class="btn-group" role="group" aria-label="...">
+                    <%= button_tag 'Meds', class: "btn btn-default" %>
+                    <%= button_tag 'LifeLabs', class: "btn btn-default" %> 
+                    <%= link_to 'Pharmanent', 'https://jay.medinet.ca/cgi-bin/launch.cgi', class: "btn btn-default" %> 
+                    <%= button_tag 'e-Fax', class: "btn btn-default" %> 
+                    <%= button_tag 'Referrals', class: "btn btn-default" %> 
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <%#= button_to 'Schedule Call Back', new_call_back_path(@video_session), method: :get, class: "btn btn-primary form-control" %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 col-sm-4 col-xs-12">
+      <div class="panel panel-profile no-bg">
+        <div class="panel-heading">
+          <div class="row">
+            <div class="col-md-6 col-sm-6 col-xs-6">
+              <h2 class="panel-title heading-sm pull-left">Notes</h2>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+              <div class="dropdown pull-right">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                  Export
+                </button>
+                <ul class="dropdown-menu export" aria-labelledby="dropdownMenu1">
+                  <li id="export_print">Print</li>
+                  <li>Fax</li>
+                  <li id="export_file">File</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="panel-body">
+          <%= form_for(@video_session, url: finish_video_session_path(@video_session)) do |f| %>
+            <%#= f.label :notes %>
+            <%= f.text_area :notes, rows: 13, class: 'form-control' %>
+
+            <%= f.submit 'End Session', id: "finish_video_session", class: "btn btn-primary hidden" %>
+          <% end %>
+        </div>
+      </div>
+      <div class="panel panel-profile no-bg">
+        <div class="panel-heading overflow-h">
+          <h2 class="panel-title heading-sm pull-left">Billing</h2>
+        </div>
+        
+        <div class="panel-body">
+          <input class="form-control" id="video_session_diagnosis" placeholder="Add Diagnosis">
+          <span class="video-session-diagnosis"><%= @video_session.diagnosis.to_s.html_safe.presence || 'Diagnosis here' %></span>
+          <span class="pull-right">Billing Code here</span>
+        </div>
+      </div>
+      <%= render 'tasks/tasks' %>
+    </div>
+  </div>
+<% else %>
+  <% title = @video_session.status == 'online' ? 'Online Visit' : 'Video Session' %>
+  <% provide(:title, title) %>
+  <div class="panel panel-profile no-bg">
+    <div class="panel-heading overflow-h">
+      <h2 class="panel-title heading-sm pull-left"><%= title %></h2>
+    </div>
+    
+    <div class="panel-body">
+      <div id="waiting-message"><h2>Waiting for Doctor</h2></div>
+
+      <div class="row">
+        <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-12">
+          <div>
+            <%= render 'video_stream' %>
+          </div>
+          <div class="form-group">
+            <%= button_to 'Schedule Online Appointment', call_backs_path(@video_session), method: :post, class: "btn btn-primary" %>
+          </div>
+          <div class="form-group">
+            <%= button_to 'Leave Message', new_message_path(@video_session), method: :get, class: "btn btn-primary" %>
+          </div>
+          <div class="form-group">
+            <%= button_to 'End Session', finish_video_session_path(@video_session), method: :patch, id: "finish_video_session", class: "btn btn-primary" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<script>
+  init_video_session(<%= current_user.id %>, "<%= current_user.name %>", <%= @video_session.id %>, <%= @video_session.user_id %>,
+      "<%= ENV['OPENTOK_API_KEY'] %>", "<%= @video_session.opentok_session.session_id %>", "<%= @video_session.opentok_session.token %>", <%= @is_csr.present? %>);
+</script>
